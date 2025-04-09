@@ -47,7 +47,20 @@ size_t btok(size_t bytes) {
 
 struct avail *buddy_calc(struct buddy_pool *pool, struct avail *buddy)
 {
+    //Get offset from base address
+    uintptr_t base_addr = (uintptr_t)pool->base;
+    uintptr_t buddy_addr = (uintptr_t)buddy;
+    uintptr_t offset = buddy_addr - base_addr;
+
+    size_t block_size = (UINT64_C(1) << buddy->kval);
+    uintptr_t buddy_offset = offset ^ block_size;
+    //get address
+    struct avail *buddy_block = (struct avail *)(base_addr + buddy_offset);
+     
+    return buddy_block;
 }
+
+
 void *buddy_malloc(struct buddy_pool *pool, size_t size)
 {
     // get the kval for the requested size with enough room for the tag and kval fields
