@@ -27,10 +27,24 @@
  * @param bytes the number of bytes
  * @return size_t the K value that will fit bytes
  */
-size_t btok(size_t bytes)
-{
-    // DO NOT use math.pow
+size_t btok(size_t bytes) {
+    // Total size includes the header
+    size_t total_size = bytes + sizeof(struct avail);
+
+    if (total_size == 0) return 0; // Edge case: 0 bytes requested
+
+    size_t k = 0;
+    uint64_t power = UINT64_C(1); // Start with 2^0 = 1, using C99 macro
+
+    // Increase k until power >= total_size
+    while (power < total_size) {
+        power <<= 1; // Double the power (2^k)
+        k++;
+    }
+
+    return k;
 }
+
 struct avail *buddy_calc(struct buddy_pool *pool, struct avail *buddy)
 {
 }
